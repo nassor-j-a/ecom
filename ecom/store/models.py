@@ -10,6 +10,10 @@ class Category(models.Model):
     def __str__(self):
         return self.name
     
+    # setting a plural name that should display on the admin area
+    class Meta:
+        verbose_name_plural = 'categories'
+    
 # Customers 
 class Customer(models.Model):
     first_name = models.CharField(max_length=50)
