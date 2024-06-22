@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Product
+from .models import Product, Category
 from django.contrib.auth import authenticate, login, logout
 # This is for messages in the login_user function
 from django.contrib import messages
@@ -63,9 +63,25 @@ def register_user(request):
                 request, ("There wa aproblem registering, please try again!!!"))
             return redirect('register')
     else:
-        return render(request, 'register.html', {'form':form})
+        return render(request, 'register.html', {'form': form})
 
 
 def product(request, pk):
     product = Product.objects.get(id=pk)
     return render(request, 'product.html', {'product': product})
+
+
+def category(request, foo):
+    # Replace hyphens with spaces
+    foo = foo.replace('-', ' ')
+    # Grab the category from the url
+    try:
+        # look up the category
+        category = Category.objects.get(name=foo)
+        # get all the products in that category
+        products = Product.objects.filter(category=category)
+        return render(request, 'category.html', {'foo': foo, 'products': products, 'category': category})
+    except:
+        messages.success(
+                request, ("That Category doesn't exist!!!"))
+        return redirect('home')
