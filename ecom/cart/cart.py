@@ -1,4 +1,5 @@
 class Cart():
+    # initialize the cart class
     def __init__(self, request):
         self.session = request.session
         
@@ -12,11 +13,19 @@ class Cart():
         # Make sure that Cart is available on all pages of site
         self.cart = cart
         
-        
     #     self.items = []
 
-    # def add(self, product):
-    #     self.items.append(product)
+    def add(self, product):
+        product_id = str(product.id)
+        
+        # logic 
+        if product_id not in self.cart:
+            # self.cart[product_id] = {'price': str(product.price), 'quantity': 1}
+            pass
+        else:
+            self.cart[product_id] = {'price': str(product.price),}
+        
+        self.session.modified = True
 
     # def remove(self, product):
     #     self.items.remove(product)
