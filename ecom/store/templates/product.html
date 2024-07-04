@@ -29,7 +29,7 @@
             &nbsp; ${{ product.sale_price }} {% else %}
             <!-- Product price-->
             ${{ product.price }}
-            <br>ID: {{ product.id }}
+            <!-- <br>ID: {{ product.id }} -->
             {% endif %}
             <br /><br>
             <a href="{% url 'home' %}" class="btn btn-secondary">Home</a>
@@ -44,26 +44,29 @@
 
 <script>
   // Check if button is pressed
+  // 
+  
   $(document).on('click', '#add-cart', function(e){
     e.preventDefault();
-    // sth that allows us to send sth at the backend of our server without refreshing the page
+
     $.ajax({
-      type: 'POST',
-      url: '{% url "cart_add" %}',
-      data: {
-        product_id: $('#add-cart').val(),
-        csrfmiddlewaretoken: '{{ csrf_token }}',
-        acton: 'post'
-      },
-
-      success: function(json){
-        console.log(json)
-      },
-
-      error: function(xhr, errmsg, err){}
-
+        type: 'POST',
+        url: '{% url "cart_add" %}',
+        data: {
+            product_id: $(this).val(),
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            action: 'post'
+        },
+        success: function(json){
+            console.log(json);
+            document.getElementById("cart_quantity").textContent = json.qty;
+        },
+        error: function(xhr, errmsg, err){
+            console.error(xhr.status + ": " + xhr.responseText);
+        }
     });
-  })
+});
+
 </script>
 
 {% endblock%}

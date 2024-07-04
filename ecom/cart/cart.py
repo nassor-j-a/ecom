@@ -26,6 +26,10 @@ class Cart():
             self.cart[product_id] = {'price': str(product.price),}
         
         self.session.modified = True
+        
+    def __len__(self):
+        return sum(item['quantity'] for item in self.cart.values())
+
 
     # def remove(self, product):
     #     self.items.remove(product)
