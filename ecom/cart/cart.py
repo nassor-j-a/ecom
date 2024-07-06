@@ -51,18 +51,27 @@ class Cart():
             
         self.cart = cart
 
-    def add(self, product):
+    def add(self, product, quantity):
         product_id = str(product.id)
+        product_qty = str(quantity)
         
-        if product_id not in self.cart:
-            self.cart[product_id] = {'price': str(product.price), 'quantity': 1}
+        # logic
+        if product_id in self.cart:
+            pass
         else:
-            self.cart[product_id]['quantity'] += 1
+            # self.cart[product_id] = {'price': str(product.price)}
+            self.cart[product_id] = int(product_qty)
+            
+        # if product_id not in self.cart:
+            # self.cart[product_id] = {'price': str(product.price), 'quantity': 1}
+        # else:
+            # self.cart[product_id]['quantity'] += 1
         
         self.session.modified = True
         
     def __len__(self):
-        return sum(item['quantity'] for item in self.cart.values())
+        return len(self.cart)
+        # return sum(item['quantity'] for item in self.cart.values())
 
     def get_products(self):
         # get ids from cart
@@ -73,3 +82,7 @@ class Cart():
         # return those looked up products
         return products
         
+    def get_quantities(self):
+        quantities = self.cart
+        
+        return quantities
