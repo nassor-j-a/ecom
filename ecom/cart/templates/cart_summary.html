@@ -9,84 +9,99 @@
   </div>
 </header>
 <br /><br />
+
 <div class="container">
-  {% if cart_products %} {% for product in cart_products %}
-  <div class="card mb-3">
-    <div class="row g-0">
-      <div class="col-md-4">
-        <img
-          src="{{ product.image.url }}"
-          class="img-fluid rounded-start"
-          alt="..."
-        />
-      </div>
-      <div class="col-md-8">
-        <div class="card-body">
-          <center>
-            <h5 class="card-title">{{ product.name }}</h5>
-            <p class="card-text">{{ product.description }}</p>
+  {% if cart_products %} 
+    {% for product in cart_products %}
+      <div class="card mb-3">
+        <div class="row g-0">
+          <div class="col-md-4">
+            <img
+              src="{{ product.image.url }}"
+              class="img-fluid rounded-start"
+              alt="..."
+            />
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <center>
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.description }}</p>
 
-            {% if product.is_sale %}
-            <div class="d-flex justify-content-center small text-warning mb-2">
-              <div class="bi-star-fill"></div>
-              &nbsp;&nbsp;Sale!!!&nbsp;&nbsp;
-              <div class="bi-star-fill"></div>
-            </div>
+                {% if product.is_sale %}
+                <div class="d-flex justify-content-center small text-warning mb-2">
+                  <div class="bi-star-fill"></div>
+                  &nbsp;&nbsp;Sale!!!&nbsp;&nbsp;
+                  <div class="bi-star-fill"></div>
+                </div>
 
-            <!-- Product price-->
-            <strike>${{ product.price }}</strike>
-            &nbsp; ${{ product.sale_price }} {% else %}
-            <!-- Product price-->
-            ${{ product.price }}
-            <!-- <br>ID: {{ product.id }} -->
-            {% endif %}
-            <br /><br />
-            <div class="row justify-content-center">
-              <div class="col-md-2">Quantity:</div>
-              <div class="col-md-2">
-                <select
-                  class="form-select form-select-sm"
-                  id="select{{ product.id }}"
+                <!-- Product price-->
+                <strike>${{ product.price }}</strike>
+                &nbsp; ${{ product.sale_price }} {% else %}
+                <!-- Product price-->
+                ${{ product.price }}
+                <!-- <br>ID: {{ product.id }} -->
+                {% endif %}
+                <br /><br />
+                <div class="row justify-content-center">
+                  <div class="col-md-2">Quantity:</div>
+                  <div class="col-md-2">
+                    <select
+                      class="form-select form-select-sm"
+                      id="select{{ product.id }}"
+                      aria-label="Default select example"
+                    >
+                      <!-- {'4':3, '2':4 } -->
+                      <!-- looping through a dictionary in django -->
+                      {% for key, value in quantities.items %}
+                        <!-- slugify converts the string key into an int -->
+                        {% if key == product.id|slugify %}
+                          <option selected>{{ value }}</option>
+                        {% endif %} 
+                      {% endfor %}
+
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                    </select>
+                  </div>
+                </div>
+                <br /><br />
+                <a href="{% url 'home' %}" class="btn btn-secondary">Home</a>
+                <button
+                  type="button"
+                  data-index="{{ product.id }}"
+                  class="btn btn-secondary update-cart"
                 >
-                  <!-- {'4':3, '2':4 } -->
-                  <!-- looping through a dictionary in django -->
-                  {% for key, value in quantities.items %}
-                  <!-- slugify converts the string key into an int -->
-                  {% if key == product.id|slugify %}
-                  <option selected>{{ value }}</option>
-                  {% endif %} {% endfor %}
-
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </div>
+                  Update
+                </button>
+                <button
+                  type="button"
+                  data-index="{{ product.id }}"
+                  class="btn btn-danger delete-cart"
+                >
+                  Remove
+                </button>
+              </center>
             </div>
-            <br /><br />
-            <a href="{% url 'home' %}" class="btn btn-secondary">Home</a>
-            <button
-              type="button"
-              data-index="{{ product.id }}"
-              class="btn btn-secondary update-cart"
-            >
-              Update
-            </button>
-          </center>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-  <br />
-  {% endfor %} {% else %}
+      <br />
 
-  <p>There's nothing in your cart....</p>
-  <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    {% endfor %}
+
+  {% else %}
+    <p>There's nothing in your cart....</p>
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
   {% endif %}
+
 </div>
 
 <script>
+  // Update cart
   // Check if button is pressed
   //
   // . used in update-cart below is because the button has a class of update-cart
@@ -117,8 +132,31 @@
       error: function (xhr, errmsg, err) {
         console.error(xhr.status + ": " + xhr.responseText);
       },
-    });int
+    });
   });
+
+  // Delete item from cart
+  $(document).on("click", ".delete-cart", function (e) {
+        e.preventDefault();
+        var productId = $(this).data("index");
+
+        $.ajax({
+            type: "POST",
+            url: '{% url "cart_delete" %}',
+            data: {
+                product_id: productId,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+                action: "post",
+            },
+            success: function (json) {
+                location.reload();
+            },
+            error: function (xhr, errmsg, err) {
+                console.error(xhr.status + ": " + xhr.responseText);
+            },
+        });
+    });
+
 </script>
 
 {% endblock %}
