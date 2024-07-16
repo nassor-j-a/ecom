@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Product, Category
+from .models import Product, Category, Profile
 from django.contrib.auth import authenticate, login, logout
 
 # This is for messages in the login_user function
@@ -7,7 +7,7 @@ from django.contrib import messages
 
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm
+from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm
 from django import forms
 
 # Create your views here.
@@ -58,8 +58,8 @@ def register_user(request):
             user = authenticate(username=username, password=password)
             login(request, user)
             messages.success(
-                request, ("You have Registered Successfully!!!"))
-            return redirect('home')
+                request, ("Username created - Please Fill Out Your User Info Below..."))
+            return redirect('update_info')
         else:
             messages.success(
                 request, ("There wa aproblem registering, please try again!!!"))
@@ -108,6 +108,19 @@ def update_user(request):
         messages.success(request, "You must be must be logged In to access that page !!!")
         return redirect('home')
 
+def update_info(request):
+    if request.user.is_authenticated:
+        current_user = Profile.objects.get(user__id=request.user.id)
+        form = UserInfoForm(request.POST or None, instance=current_user)
+        if form.is_valid():
+            form.save()
+
+            messages.success(request, "Your Info Has Been Updated!!!")
+            return redirect('home')
+        return render(request, 'update_info.html', {'form' : form})
+    else:
+        messages.success(request, "You must be must be logged In to access that page !!!")
+        return redirect('home')
 
 
 def product(request, pk):
