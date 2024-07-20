@@ -9,6 +9,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm
 from django import forms
+# querring a database using a filter
+from django.db.models import Q
+
 
 # Create your views here.
 
@@ -23,8 +26,20 @@ def about(request):
     return render(request, 'about.html', {})
 
 def search(request):
-    return render(request, 'search.html', {})
-
+    #  Determine if they filled out the form
+    if request.method == 'POST':
+        searched = request.POST['searched']
+        # Query the DB Model
+        searched = Product.objects.filter(Q(name__icontains=searched) | Q(description__icontains=searched)) # name is the field name in the model database icontain allows us to search for less case senstive data
+        # Test for null
+        if not searched:
+            messages.success(request, ("That Product Does Not Exist... Please Try again!!!"))
+            return redirect('search.html', {})
+        else:
+            return render(request, 'search.html', {'searched': searched })
+    else:
+        return render(request, 'search.html', {})
+        
 
 def login_user(request):
     if request.method == "POST":
