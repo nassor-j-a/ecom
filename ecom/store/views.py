@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from .models import Product, Category, Profile
 from django.contrib.auth import authenticate, login, logout
 
@@ -34,7 +35,7 @@ def search(request):
         # Test for null
         if not searched:
             messages.success(request, ("That Product Does Not Exist... Please Try again!!!"))
-            return redirect('search.html', {})
+            return redirect('search')
         else:
             return render(request, 'search.html', {'searched': searched })
     else:
@@ -125,21 +126,19 @@ def update_user(request):
     else:
         messages.success(request, "You must be must be logged In to access that page !!!")
         return redirect('home')
-
+@login_required
 def update_info(request):
     if request.user.is_authenticated:
         current_user = Profile.objects.get(user__id=request.user.id)
         form = UserInfoForm(request.POST or None, instance=current_user)
         if form.is_valid():
             form.save()
-
             messages.success(request, "Your Info Has Been Updated!!!")
             return redirect('home')
         return render(request, 'update_info.html', {'form' : form})
     else:
         messages.success(request, "You must be must be logged In to access that page !!!")
         return redirect('home')
-
 
 def product(request, pk):
     product = Product.objects.get(id=pk)

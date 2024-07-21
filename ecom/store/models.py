@@ -13,10 +13,11 @@ class Profile(models.Model):
     phone = models.CharField(max_length=20, blank=True)
     address1 = models.CharField(max_length=200, blank=True, default='')
     address2 = models.CharField(max_length=200, blank=True, default='')
-    city = models.CharField(max_length=100, blank=True, default='')
-    state = models.CharField(max_length=100, blank=True, default='')
-    zip_code = models.CharField(max_length=10, blank=True, default='')
-    country = models.CharField(max_length=100, blank=True, default='')
+    city = models.CharField(max_length=200, blank=True, default='')
+    state = models.CharField(max_length=200, blank=True, default='')
+    zip_code = models.CharField(max_length=200, blank=True, default='')
+    country = models.CharField(max_length=200, blank=True, default='')
+    old_cart = models.CharField(max_length=200, blank=True, null=True)
     
     def __str__(self):
         return self.user.username

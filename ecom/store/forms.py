@@ -3,6 +3,9 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm, SetPassw
 from django import forms
 from .models import Profile
 
+from django import forms
+from .models import Profile
+
 class UserInfoForm(forms.ModelForm):
     phone = forms.CharField(label="", widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone'}), required=False)
     address1 = forms.CharField(label="", widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Address 1'}), required=False)
@@ -13,8 +16,8 @@ class UserInfoForm(forms.ModelForm):
     country = forms.CharField(label="", widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Country'}), required=False)
     
     class Meta:
-      model = Profile
-      fields = ('phone', 'address1', 'address2', 'city', 'state', 'zip_code', 'country', )
+        model = Profile
+        fields = ('phone', 'address1', 'address2', 'city', 'state', 'zip_code', 'country')
 
 class  ChangePasswordForm(SetPasswordForm):
     class Meta:

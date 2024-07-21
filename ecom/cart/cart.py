@@ -1,4 +1,4 @@
-from store.models import Product
+from store.models import Product, Profile
 
 # class Cart():
 #     # initialize the cart class
@@ -44,8 +44,13 @@ class Cart():
     # initialize the cart class
     def __init__(self, request):
         self.session = request.session
+        # Get request
+        self.request = request 
+        
+        #  Get the current session key if it exist
         cart = self.session.get('session_key')
 
+        # if the user is new, no session key! Create one!
         if 'session_key' not in request.session:
             cart = self.session['session_key'] = {}
 
@@ -68,6 +73,17 @@ class Cart():
             # self.cart[product_id]['quantity'] += 1
 
         self.session.modified = True
+        
+        # Deal with logged in users
+        if self.request.user.is_authenticated:
+            # Get the current user profile
+            current_user = Profile.objects.filter(user__id=self.request.user.id)
+            # getting rid of single quotation marks in the python dictionary having the cart items i.e; {'4':2, '2':1} to {"4":2, "2":1}
+            # this will help json to convert the string stored in the db back to a dictionary, key: remember json doesn't understand singlie quotation marks
+            carty = str(self.cart).replace("\'", "\"")
+            # save carty to the Profile model
+            current_user.update(old_cart=carty)
+            
 
     def cart_total(self):
         # Get product IDs from cart
