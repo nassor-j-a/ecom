@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Product, Category, Profile
+from cart.cart import Cart
 from django.contrib.auth import authenticate, login, logout
 
 # This is for messages in the login_user function
@@ -12,6 +13,7 @@ from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm
 from django import forms
 # querring a database using a filter
 from django.db.models import Q
+import json
 
 
 # Create your views here.
@@ -49,6 +51,26 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            
+            # Do some shopping cart stuff
+            current_user = Profile.objects.get(user__id=request.user.id)
+            
+            # Get their saved cart from the database
+            saved_cart = current_user.old_cart
+            
+            # convert database string into a python dictionary
+            if saved_cart:
+                # convert to dictionary using JSON
+                converted_cart = json.loads(saved_cart)
+                
+                #  add the loaded cart dictionary to our session
+                # get the cart
+                cart = Cart(request)
+                # loop through the cart and add the item from the database
+                for key, value in converted_cart.items():
+                    cart.db_add(product=key, quantity=value)
+                    
+            
             messages.success(request, ("You have been logged in...Welcome"))
             return redirect('home')
         else:

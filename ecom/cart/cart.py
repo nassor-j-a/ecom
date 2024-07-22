@@ -145,6 +145,16 @@ class Cart():
         # update the session with the updated cart
         self.session.modified = True
         
+        # Deal with logged in users
+        if self.request.user.is_authenticated:
+            # Get the current user profile
+            current_user = Profile.objects.filter(user__id=self.request.user.id)
+            # getting rid of single quotation marks in the python dictionary having the cart items i.e; {'4':2, '2':1} to {"4":2, "2":1}
+            # this will help json to convert the string stored in the db back to a dictionary, key: remember json doesn't understand singlie quotation marks
+            carty = str(self.cart).replace("\'", "\"")
+            # save carty to the Profile model
+            current_user.update(old_cart=carty)
+        
     def delete(self, product):
         product_id = str(product)
         
@@ -153,3 +163,41 @@ class Cart():
             del self.cart[product_id]
             
             self.session.modified = True
+        
+        # Deal with logged in users
+        if self.request.user.is_authenticated:
+            # Get the current user profile
+            current_user = Profile.objects.filter(user__id=self.request.user.id)
+            # getting rid of single quotation marks in the python dictionary having the cart items i.e; {'4':2, '2':1} to {"4":2, "2":1}
+            # this will help json to convert the string stored in the db back to a dictionary, key: remember json doesn't understand singlie quotation marks
+            carty = str(self.cart).replace("\'", "\"")
+            # save carty to the Profile model
+            current_user.update(old_cart=carty)
+            
+    def db_add(self, product,  quantity):
+        product_id = str(product)
+        product_qty = str(quantity)
+
+        # logic
+        if product_id in self.cart:
+            pass
+        else:
+            # self.cart[product_id] = {'price': str(product.price)}
+            self.cart[product_id] = int(product_qty)
+
+        # if product_id not in self.cart:
+            # self.cart[product_id] = {'price': str(product.price), 'quantity': 1}
+        # else:
+            # self.cart[product_id]['quantity'] += 1
+
+        self.session.modified = True
+        
+        # Deal with logged in users
+        if self.request.user.is_authenticated:
+            # Get the current user profile
+            current_user = Profile.objects.filter(user__id=self.request.user.id)
+            # getting rid of single quotation marks in the python dictionary having the cart items i.e; {'4':2, '2':1} to {"4":2, "2":1}
+            # this will help json to convert the string stored in the db back to a dictionary, key: remember json doesn't understand singlie quotation marks
+            carty = str(self.cart).replace("\'", "\"")
+            # save carty to the Profile model
+            current_user.update(old_cart=carty)
