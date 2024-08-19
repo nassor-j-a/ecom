@@ -103,11 +103,11 @@ def register_user(request):
             user = authenticate(username=username, password=password)
             login(request, user)
             messages.success(
-                request, ("Username created - Please Fill Out Your User Info Below..."))
+                request, ("Account created - Please Fill Out Your User Info Below..."))
             return redirect('update_info')
         else:
             messages.success(
-                request, ("There wa aproblem registering, please try again!!!"))
+                request, ("There was a problem registering, please try again!!!"))
             return redirect('register')
     else:
         return render(request, 'register.html', {'form': form})
