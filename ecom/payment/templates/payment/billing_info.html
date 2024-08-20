@@ -3,8 +3,8 @@
 <header class="bg-dark py-5">
   <div class="container px-4 px-lg-5 my-5">
     <div class="text-center text-white">
-      <h1 class="display-4 fw-bolder">Checkout</h1>
-      <p class="lead fw-normal text-white-50 mb-0">Review Your Order...</p>
+      <h1 class="display-4 fw-bolder">Biling Info</h1>
+      <p class="lead fw-normal text-white-50 mb-0">Enter Your Payment Info...</p>
     </div>
   </div>
 </header>
@@ -21,15 +21,10 @@
             }} {% else %} ${{ product.price }} {% endif %}
           </p>
           <p>
-            <small>
-                Quantity: 
-                {% for key, value in quantities.items %} 
-                  {% if key == product.id|slugify %} 
-                    {{ value }} 
-                  {% endif %} 
-                {% endfor %}
-              </small>
-              
+            <small
+              >Quantity: {% for key, value in quantities.items %} {% if key ==
+              product.id|slugify %} {{ value }} {% endif %} {% endfor %}
+            </small>
           </p>
           {% endfor %}
           <p>Total: ${{ totals }}</p>
@@ -48,7 +43,7 @@
           <div class="card-body">{{ shipping_form.as_p }}</div>
         </div>
 
-        <a href="#" class="btn btn-secondary">Continue to Billing</a>
+        <a href="#" class="btn btn-secondary">Pay Now</a>
       </form>
     </div>
   </div>
